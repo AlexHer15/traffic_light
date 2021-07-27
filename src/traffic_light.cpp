@@ -8,12 +8,44 @@
 int state=1;
 geometry_msgs::Twist location;
 
-void set_state(const std_msgs::String::ConstPtr& msg)
+bool light_blink = false;
+bool light1_blink =false;
+int blink_hz=10;
+
+void set_state(const geometry_msgs::Vector3& msg)
 {
-    std::string read;
-    read=msg->data.c_str();
-    state= read[0]-'0';
-    printf("%d",state);
+    if (msg.x>0)
+    {
+        state=3;
+        blink_hz=msg.x;
+    }
+    else if ((msg.z>0)&&(msg.y>0))
+    {
+        state=2;
+        blink_hz=msg.y;
+    }
+    else if(msg.z>0)
+    {
+        state=1;
+        blink_hz=msg.z;
+    }
+    else if(msg.y>0)
+    {
+        state=4;
+        blink_hz=msg.y;
+    }
+
+    if (blink_hz!=1)
+    {
+        light_blink=(state!=2);
+        light1_blink=(state==2);
+    }
+    else
+    {
+        light_blink=false;
+        light1_blink=false;
+        blink_hz=10;
+    }
 }
 
 void change_placement(const geometry_msgs::Twist& msg)
@@ -23,8 +55,9 @@ void change_placement(const geometry_msgs::Twist& msg)
 
 int main( int argc, char** argv )
 {
-    bool substate=true;
-    
+    bool substate_light1 = true;
+    bool substate_light =false;
+
     location.linear.x=0;
     location.linear.y=0;
     location.linear.z=0;
@@ -39,14 +72,15 @@ int main( int argc, char** argv )
     ros::Subscriber sub1 = n.subscribe("traffic_light_state", 1000,set_state);
     ros::Subscriber sub2 = n.subscribe("traffic_light_placement", 1000,change_placement);
     
-    ros::Rate rate(10);
-
     visualization_msgs::Marker box_marker;
     visualization_msgs::Marker light_marker;
     visualization_msgs::Marker light1_marker;
             
     while(ros::ok)
     {
+    
+    ros::Rate rate(blink_hz);
+
     light1_marker.header.frame_id = "traffic_light";
     light1_marker.header.stamp = ros::Time::now();
     
@@ -124,6 +158,11 @@ int main( int argc, char** argv )
     light1_marker.pose.orientation.z = 0;
     light1_marker.pose.orientation.w = 1;
 
+    light1_marker.color.r = 0.5f;
+    light1_marker.color.g = 0.5f;
+    light1_marker.color.b = 0.5f;
+    light1_marker.color.a = 1.0f;
+
     light1_marker.scale.x = 0.01;
     light1_marker.scale.y = 0.01;
     light1_marker.scale.z = 0.01;
@@ -154,30 +193,31 @@ int main( int argc, char** argv )
     }
     if (state==2)
     {
-        if (substate == true)
+        if ((substate_light1 == false)||(light1_blink==false))
             {     
             light1_marker.color.r = 1.0f;
             light1_marker.color.g = 1.0f;
             light1_marker.color.b = 0.0f;
-            light1_marker.color.a = 1.0f;
-            substate = false;
+            substate_light1 = true;
         }
         else
         {
-            substate = true;
-            light1_marker.color.r = 0.5f;
-            light1_marker.color.g = 0.5f;
-            light1_marker.color.b = 0.5f;
-            light1_marker.color.a = 1.0f;
+            substate_light1 = false;
         }
     }
-    else if (substate==false)
-    {
-        substate = true;
-        light1_marker.color.r = 0.5f;
-        light1_marker.color.g = 0.5f;
-        light1_marker.color.b = 0.5f;
-        light1_marker.color.a = 1.0f;
+    else if(light_blink==true)
+    {   
+        if(substate_light==false)
+        {
+            substate_light = true;
+            light_marker.color.r = 0.5f;
+            light_marker.color.g = 0.5f;
+            light_marker.color.b = 0.5f;           
+        }
+        else
+        {
+            substate_light = false;
+        }
     }
 
     light_marker.lifetime = ros::Duration();
