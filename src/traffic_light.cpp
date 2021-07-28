@@ -2,15 +2,16 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include "std_msgs/String.h"
-#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseArray.h>
 #include <tf/transform_broadcaster.h>
 
 
 int state=1;
-geometry_msgs::Pose location;
 
-bool light_blink = false;
-bool light1_blink =false;
+geometry_msgs::PoseArray location;
+
+bool light_blink[10] = {false};
+bool light1_blink[10] = {false};
 int blink_hz=10;
 
 void set_state(const geometry_msgs::Vector3& msg)
@@ -38,33 +39,29 @@ void set_state(const geometry_msgs::Vector3& msg)
 
     if (blink_hz!=1)
     {
-        light_blink=(state!=2);
-        light1_blink=(state==2);
+        light_blink[1]=(state!=2);
+        light1_blink[1]=(state==2);
     }
     else
     {
-        light_blink=false;
-        light1_blink=false;
+        light_blink[1]=false;
+        light1_blink[1]=false;
         blink_hz=10;
     }
 }
 
 void change_placement(const geometry_msgs::Pose& msg)
 {
-    location=msg;
+    location.poses[0]=msg;
 }
 
 int main( int argc, char** argv )
 {
-    
-    bool substate_light1 = true;
-    bool substate_light =false;
-    int size=1;
+    location.poses.resize(2);
+    bool substate_light1[10] = {true};
+    bool substate_light[10] = {false};
+    int size=2;
     std::string frame[10]={"_frame_1","_frame_2","_frame_3","_frame_4","_frame_5","_frame_6","_frame_7","_frame_8","_frame_9","_frame_10"};
-
-    location.position.x=0;
-    location.position.y=0;
-    location.position.z=0;
     
     ros::init(argc, argv, "traffic_light");
     ros::NodeHandle n;
@@ -84,6 +81,10 @@ int main( int argc, char** argv )
         
     for (int i=0;i<10;i++)
     {
+        location.poses[i].position.x=0;
+        location.poses[i].position.y=0;
+        location.poses[i].position.z=0;
+
         light1_markers.markers[i].header.frame_id = "traffic_light"+frame[i];
         light1_markers.markers[i].header.stamp = ros::Time::now();
 
@@ -161,9 +162,9 @@ int main( int argc, char** argv )
         light1_markers.markers[i].pose.orientation.z = 0;
         light1_markers.markers[i].pose.orientation.w = 1;
 
-        light1_markers.markers[i].color.r = 0.5f;
-        light1_markers.markers[i].color.g = 0.5f;
-        light1_markers.markers[i].color.b = 0.5f;
+        light1_markers.markers[i].color.r = 1.0f;
+        light1_markers.markers[i].color.g = 1.0f;
+        light1_markers.markers[i].color.b = 0.0f;
         light1_markers.markers[i].color.a = 0.0f;
 
         light1_markers.markers[i].scale.x = 0.01;
@@ -187,9 +188,8 @@ int main( int argc, char** argv )
     for (int i=0;i<size;i++)
     {
         box_markers.markers[i].color.a = 1.0f;
-        light1_markers.markers[i].color.a = 1.0f;
         light_markers.markers[i].color.a = 1.0f;
-        
+
         switch (state){
         {case 1:
             light_markers.markers[i].color.r = 1.0f;
@@ -214,34 +214,28 @@ int main( int argc, char** argv )
         }
         if (state==2)
         {
-        if ((substate_light1 == false)||(light1_blink==false))
+        if ((substate_light1[i] == false)||(light1_blink[i] == false))
             {     
-            light1_markers.markers[i].color.r = 1.0f;
-            light1_markers.markers[i].color.g = 1.0f;
-            light1_markers.markers[i].color.b = 0.0f;
-            substate_light1 = true;
+            light1_markers.markers[i].color.a = 1.0f;
+            substate_light1[i] = true;
         }
         else
         {
-            light1_markers.markers[i].color.r = 0.5f;
-            light1_markers.markers[i].color.g = 0.5f;
-            light1_markers.markers[i].color.b = 0.5f;
-            substate_light1 = false;
+            light1_markers.markers[i].color.a = 0.0f;
+            substate_light1[i] = false;
         }
         }
-        else if(light_blink==true)
+        else if(light_blink[i]==true)
         {   
-            if(substate_light==false)
+            if(substate_light[i]==false)
             {
-                substate_light = true;
-                light_markers.markers[i].color.r = 0.5f;
-                light_markers.markers[i].color.g = 0.5f;
-                light_markers.markers[i].color.b = 0.5f;           
+                substate_light[i] = true;           
             }
-        else
-        {
-            substate_light = false;
-        }
+            else
+            {
+                light_markers.markers[i].color.a = 0.0f;
+                substate_light[i] = false;
+            }
         }
         light1_markers.markers[i].header.stamp = ros::Time::now();
         light_markers.markers[i].header.stamp = ros::Time::now();
@@ -255,7 +249,7 @@ int main( int argc, char** argv )
         buffer.markers[3*i+1]=light_markers.markers[i];
         buffer.markers[3*i+2]=box_markers.markers[i];
 
-        transform.setOrigin( tf::Vector3((location.position.x + 1),location.position.y,location.position.z) );
+        transform.setOrigin( tf::Vector3((location.poses[i].position.x),location.poses[i].position.y,location.poses[i].position.z) );
         transform.setRotation(tf::Quaternion(0,0,0,1));
         br.sendTransform(tf::StampedTransform(transform, ros::Time::now(),"/map","/traffic_light"+frame[i]));
     }
