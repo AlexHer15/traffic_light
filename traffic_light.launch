@@ -1,0 +1,15 @@
+<launch>
+
+  <group ns="traffic1">
+    <node pkg="traffic_light" name="traffic_light" type="traffic_light"/>
+  </group>
+  <group ns="traffic2">
+    <node pkg="traffic_light" name="traffic_light" type="traffic_light"/>
+  </group>
+    <node pkg="traffic_light" name="change_state" type="change_state.py">
+    <remap from="traffic_light_state" to="/traffic1/traffic_light_state"/>
+  </node>
+    <node pkg="traffic_light" name="place_light" type="place_light.py">
+    <remap from="traffic_light_placement" to="/traffic2/traffic_light_placement"/>
+  </node>
+  </launch>

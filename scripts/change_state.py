@@ -12,9 +12,7 @@ def talker():
     
     while not rospy.is_shutdown():
         
-        rospy.loginfo("enter state ")
-        
-        msg=raw_input()
+        msg=raw_input("enter state")
         
         pub.publish(msg)
         

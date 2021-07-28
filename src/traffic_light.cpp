@@ -32,18 +32,14 @@ int main( int argc, char** argv )
     ros::init(argc, argv, "traffic_light");
     ros::NodeHandle n;
        
-    ros::Publisher box_marker_pub = n.advertise<visualization_msgs::Marker>("traffic_light", 100);
-    ros::Publisher light_marker_pub = n.advertise<visualization_msgs::Marker>("traffic_light", 100);
-    ros::Publisher light1_marker_pub = n.advertise<visualization_msgs::Marker>("traffic_light", 100);
+    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("traffic_light", 100);
     
     ros::Subscriber sub1 = n.subscribe("traffic_light_state", 1000,set_state);
     ros::Subscriber sub2 = n.subscribe("traffic_light_placement", 1000,change_placement);
     
     ros::Rate rate(10);
 
-    visualization_msgs::Marker box_marker;
-    visualization_msgs::Marker light_marker;
-    visualization_msgs::Marker light1_marker;
+    visualization_msgs::Marker box_marker,light_marker,light1_marker;
             
     while(ros::ok)
     {
@@ -184,9 +180,9 @@ int main( int argc, char** argv )
     light1_marker.lifetime = ros::Duration();
     box_marker.lifetime = ros::Duration();
 
-    light1_marker_pub.publish(light1_marker);
-    box_marker_pub.publish(box_marker);
-    light_marker_pub.publish(light_marker);
+    marker_pub.publish(light1_marker);
+    marker_pub.publish(box_marker);
+    marker_pub.publish(light_marker);
 
     static tf::TransformBroadcaster br;
     tf::Transform transform;
