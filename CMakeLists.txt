@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(traffic_light)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
- add_compile_options(-std=c++11)
+ add_compile_options(-std=c++1z)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -164,7 +164,6 @@ add_dependencies(traffic_light  ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXP
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(traffic_light ${catkin_LIBRARIES})
-
 #############
 ## Install ##
 #############
