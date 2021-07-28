@@ -24,15 +24,14 @@ void change_placement(const geometry_msgs::Twist& msg)
 int main( int argc, char** argv )
 {
     bool substate=true;
-    
     location.linear.x=0;
     location.linear.y=0;
     location.linear.z=0;
-    
+ 
     ros::init(argc, argv, "traffic_light");
-    ros::NodeHandle n;
-       
-    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("traffic_light", 100);
+    ros::NodeHandle n("~");
+
+    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("Marker", 100);
     
     ros::Subscriber sub1 = n.subscribe("traffic_light_state", 1000,set_state);
     ros::Subscriber sub2 = n.subscribe("traffic_light_placement", 1000,change_placement);
@@ -40,16 +39,16 @@ int main( int argc, char** argv )
     ros::Rate rate(10);
 
     visualization_msgs::Marker box_marker,light_marker,light1_marker;
-            
+           
     while(ros::ok)
     {
-    light1_marker.header.frame_id = "traffic_light";
+    light1_marker.header.frame_id = n.getNamespace();
     light1_marker.header.stamp = ros::Time::now();
     
-    light_marker.header.frame_id = "traffic_light";
+    light_marker.header.frame_id = n.getNamespace();
     light_marker.header.stamp = ros::Time::now();
 
-    box_marker.header.frame_id = "traffic_light";
+    box_marker.header.frame_id = n.getNamespace();
     box_marker.header.stamp = ros::Time::now();
         
     box_marker.ns = "box";
@@ -189,7 +188,7 @@ int main( int argc, char** argv )
     
     transform.setOrigin( tf::Vector3(location.linear.x,location.linear.y,location.linear.z) );
     transform.setRotation(tf::Quaternion(0,0,0,1));
-    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "traffic_light", "map"));
+    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", n.getNamespace()));
     
     ros::spinOnce();
     rate.sleep();
