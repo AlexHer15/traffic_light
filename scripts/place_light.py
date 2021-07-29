@@ -2,22 +2,29 @@
 
 import rospy
 import geometry_msgs.msg  
-
+import tf
 
 def place_light():
 
     rospy.init_node('place_light', anonymous=True)
-    spub = rospy.Publisher('traffic_light_placement', geometry_msgs.msg.Twist, queue_size=10)
+    spub = rospy.Publisher('traffic_light_placement', geometry_msgs.msg.Pose, queue_size=10)
     
-    msg=geometry_msgs.msg.Twist()
+    msg=geometry_msgs.msg.Pose()
     
     rate = rospy.Rate(10) # 10hz
     
     while not rospy.is_shutdown():
         
-        msg.linear.x=float(input("x location "))
-        msg.linear.y=float(input("y location "))
-        msg.linear.z=float(input("z location "))
+        msg.position.x=float(input("x location "))
+        msg.position.y=float(input("y location "))
+        msg.position.z=float(input("z location "))
+        
+        angle = float(input("introduce the z angle "))
+        qoat = tf.transformations.quaternion_from_euler(0,0,angle*3.14/180)
+        msg.orientation.x = qoat[0] 
+        msg.orientation.y = qoat[1] 
+        msg.orientation.z = qoat[2] 
+        msg.orientation.w = qoat[3] 
         
         spub.publish(msg)
         

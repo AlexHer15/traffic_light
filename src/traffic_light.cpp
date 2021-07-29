@@ -1,12 +1,12 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "std_msgs/String.h"
-#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Pose.h>
 #include <tf/transform_broadcaster.h>
 
 
-int state=1;
-geometry_msgs::Twist location;
+int state=6;
+geometry_msgs::Pose location;
 
 void set_state(const std_msgs::String::ConstPtr& msg)
 {
@@ -16,7 +16,7 @@ void set_state(const std_msgs::String::ConstPtr& msg)
     printf("%d",state);
 }
 
-void change_placement(const geometry_msgs::Twist& msg)
+void change_placement(const geometry_msgs::Pose& msg)
 {
     location=msg;
 }
@@ -24,10 +24,15 @@ void change_placement(const geometry_msgs::Twist& msg)
 int main( int argc, char** argv )
 {
     bool substate=true;
-    location.linear.x=0;
-    location.linear.y=0;
-    location.linear.z=0;
- 
+    location.position.x = 0;
+    location.position.y = 0;
+    location.position.z = 0;
+    
+    location.orientation.x = 0;
+    location.orientation.y = 0;
+    location.orientation.z = 0;
+    location.orientation.w = 1;
+    
     ros::init(argc, argv, "traffic_light");
     ros::NodeHandle n("~");
 
@@ -39,17 +44,12 @@ int main( int argc, char** argv )
     ros::Rate rate(10);
 
     visualization_msgs::Marker box_marker,light_marker,light1_marker;
-           
-    while(ros::ok)
-    {
+
     light1_marker.header.frame_id = n.getNamespace();
-    light1_marker.header.stamp = ros::Time::now();
     
     light_marker.header.frame_id = n.getNamespace();
-    light_marker.header.stamp = ros::Time::now();
-
+    
     box_marker.header.frame_id = n.getNamespace();
-    box_marker.header.stamp = ros::Time::now();
         
     box_marker.ns = "box";
     box_marker.id = 0;
@@ -62,10 +62,10 @@ int main( int argc, char** argv )
     box_marker.pose.position.y = 0;
     box_marker.pose.position.z = 0;
 
-    box_marker.pose.orientation.x = 1;
+    box_marker.pose.orientation.x = 0.707;
     box_marker.pose.orientation.y = 0;
     box_marker.pose.orientation.z = 0;
-    box_marker.pose.orientation.w = 1;
+    box_marker.pose.orientation.w = 0.707;
 
     box_marker.scale.x = 0.01;
     box_marker.scale.y = 0.01;
@@ -95,15 +95,17 @@ int main( int argc, char** argv )
     light_marker.pose.position.x = 0;
     light_marker.pose.position.y = -0.001;
 
-    light_marker.pose.orientation.x = 1;
+    light_marker.pose.orientation.x = 0.707;
     light_marker.pose.orientation.y = 0;
     light_marker.pose.orientation.z = 0;
-    light_marker.pose.orientation.w = 1;
+    light_marker.pose.orientation.w = 0.707;
 
     light_marker.scale.x = 0.01;
     light_marker.scale.y = 0.01;
     light_marker.scale.z = 0.01;
 
+    light1_marker.color.a = 1.0f;
+    
     light1_marker.ns = "light2";
     light1_marker.id = 2;
     light1_marker.type = visualization_msgs::Marker::MESH_RESOURCE;
@@ -114,47 +116,70 @@ int main( int argc, char** argv )
     light1_marker.pose.position.y = -0.001;
     light1_marker.pose.position.z = 0.1;
 
-    light1_marker.pose.orientation.x = 1;
+    light1_marker.pose.orientation.x = 0.707;
     light1_marker.pose.orientation.y = 0;
     light1_marker.pose.orientation.z = 0;
-    light1_marker.pose.orientation.w = 1;
+    light1_marker.pose.orientation.w = 0.707;
 
     light1_marker.scale.x = 0.01;
     light1_marker.scale.y = 0.01;
     light1_marker.scale.z = 0.01;
     
-    light1_marker.mesh_resource = "package://traffic_light/stl/light1.stl";
+    light1_marker.color.r = 0.5f;
+    light1_marker.color.g = 0.5f;
+    light1_marker.color.b = 0.5f;
+    light1_marker.color.a = 1.0f;
 
+    light1_marker.mesh_resource = "package://traffic_light/stl/light1.stl";
+       
+    while(ros::ok) 
+    {
+
+    box_marker.header.stamp = ros::Time::now();
+    light_marker.header.stamp = ros::Time::now();
+    light1_marker.header.stamp = ros::Time::now();
+    light1_marker.color.a = 0.0f;
+    
     switch (state){
         {case 1:
             light_marker.color.r = 1.0f;
             light_marker.color.g = 0.0f;
+            light_marker.color.b = 0.0f;
             light_marker.pose.position.z = 0.2;
         break;}
         {case 2:
             light_marker.color.r = 1.0f;
             light_marker.color.g = 0.0f;
+            light_marker.color.b = 0.0f;
             light_marker.pose.position.z = 0.2;
         break;}
         {case 3:
             light_marker.color.r = 0.0f;
             light_marker.color.g = 1.0f;
+            light_marker.color.b = 0.0f;
             light_marker.pose.position.z = 0.0;
         break;}
         {case 4:
             light_marker.color.r = 1.0f;
             light_marker.color.g = 1.0f;
+            light_marker.color.b = 0.0f;
             light_marker.pose.position.z = 0.1;
         break;}
+        {default:
+            light_marker.pose.position.z = 0.0;
+            light_marker.color.r = 0.5f;
+            light_marker.color.g = 0.5f;
+            light_marker.color.b = 0.5f;
+        }
     }
-    if (state==2)
+    if ((state==2)||(state==5))
     {
-        if (substate == true)
+        light1_marker.color.a = 1.0f;
+        if ((substate == true)||(state==2))
             {     
             light1_marker.color.r = 1.0f;
             light1_marker.color.g = 1.0f;
             light1_marker.color.b = 0.0f;
-            light1_marker.color.a = 1.0f;
             substate = false;
         }
         else
@@ -163,7 +188,6 @@ int main( int argc, char** argv )
             light1_marker.color.r = 0.5f;
             light1_marker.color.g = 0.5f;
             light1_marker.color.b = 0.5f;
-            light1_marker.color.a = 1.0f;
         }
     }
     else if (substate==false)
@@ -172,7 +196,6 @@ int main( int argc, char** argv )
         light1_marker.color.r = 0.5f;
         light1_marker.color.g = 0.5f;
         light1_marker.color.b = 0.5f;
-        light1_marker.color.a = 1.0f;
     }
 
     light_marker.lifetime = ros::Duration();
@@ -186,8 +209,8 @@ int main( int argc, char** argv )
     static tf::TransformBroadcaster br;
     tf::Transform transform;
     
-    transform.setOrigin( tf::Vector3(location.linear.x,location.linear.y,location.linear.z) );
-    transform.setRotation(tf::Quaternion(0,0,0,1));
+    transform.setOrigin( tf::Vector3(location.position.x,location.position.y,location.position.z) );
+    transform.setRotation(tf::Quaternion(location.orientation.x,location.orientation.y,location.orientation.z,location.orientation.w));
     br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", n.getNamespace()));
     
     ros::spinOnce();
