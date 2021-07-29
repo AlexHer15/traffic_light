@@ -125,9 +125,6 @@ int main( int argc, char** argv )
     light1_marker.scale.y = 0.01;
     light1_marker.scale.z = 0.01;
     
-    light1_marker.color.r = 0.5f;
-    light1_marker.color.g = 0.5f;
-    light1_marker.color.b = 0.5f;
     light1_marker.color.a = 1.0f;
 
     light1_marker.mesh_resource = "package://traffic_light/stl/light1.stl";
@@ -138,7 +135,6 @@ int main( int argc, char** argv )
     box_marker.header.stamp = ros::Time::now();
     light_marker.header.stamp = ros::Time::now();
     light1_marker.header.stamp = ros::Time::now();
-    light1_marker.color.a = 0.0f;
     
     switch (state){
         {case 1:
@@ -146,58 +142,75 @@ int main( int argc, char** argv )
             light_marker.color.g = 0.0f;
             light_marker.color.b = 0.0f;
             light_marker.pose.position.z = 0.2;
+
+
+            light1_marker.color.r = 0.5f;
+            light1_marker.color.g = 0.5f;
+            light1_marker.color.b = 0.5f;
         break;}
         {case 2:
             light_marker.color.r = 1.0f;
             light_marker.color.g = 0.0f;
             light_marker.color.b = 0.0f;
             light_marker.pose.position.z = 0.2;
+
+            light1_marker.color.a = 1.0f;
+            light1_marker.color.r = 1.0f;
+            light1_marker.color.g = 1.0f;
+            light1_marker.color.b = 0.0f;
+
         break;}
         {case 3:
             light_marker.color.r = 0.0f;
             light_marker.color.g = 1.0f;
             light_marker.color.b = 0.0f;
             light_marker.pose.position.z = 0.0;
-        break;}
-        {case 4:
-            light_marker.color.r = 1.0f;
-            light_marker.color.g = 1.0f;
-            light_marker.color.b = 0.0f;
-            light_marker.pose.position.z = 0.1;
-        break;}
-        {default:
-            light_marker.pose.position.z = 0.0;
-            light_marker.color.r = 0.5f;
-            light_marker.color.g = 0.5f;
-            light_marker.color.b = 0.5f;
-        }
-    }
-    if ((state==2)||(state==5))
-    {
-        light1_marker.color.a = 1.0f;
-        if ((substate == true)||(state==2))
-            {     
-            light1_marker.color.r = 1.0f;
-            light1_marker.color.g = 1.0f;
-            light1_marker.color.b = 0.0f;
-            substate = false;
-        }
-        else
-        {
-            substate = true;
+
+
             light1_marker.color.r = 0.5f;
             light1_marker.color.g = 0.5f;
             light1_marker.color.b = 0.5f;
-        }
-    }
-    else if (substate==false)
-    {
-        substate = true;
-        light1_marker.color.r = 0.5f;
-        light1_marker.color.g = 0.5f;
-        light1_marker.color.b = 0.5f;
-    }
+        break;}
+        {case 4:
+            light_marker.color.r = 0.5f;
+            light_marker.color.g = 0.5f;
+            light_marker.color.b = 0.5f;
 
+            light1_marker.color.r = 1.0f;
+            light1_marker.color.g = 1.0f;
+            light1_marker.color.b = 0.0f;
+        break;}
+        {case 5:
+            light_marker.color.r = 0.5f;
+            light_marker.color.g = 0.5f;
+            light_marker.color.b = 0.5f;
+
+            if (substate == true)
+            {     
+            substate = false;
+            light1_marker.color.r = 1.0f;
+            light1_marker.color.g = 1.0f;
+            light1_marker.color.b = 0.0f;
+            }
+            else
+            {
+            light1_marker.color.r = 0.5f;
+            light1_marker.color.g = 0.5f;
+            light1_marker.color.b = 0.5f;
+            substate = true;
+            }
+            break;}
+        {case 6:
+            light_marker.color.r = 0.5f;
+            light_marker.color.g = 0.5f;
+            light_marker.color.b = 0.5f;
+
+            light1_marker.color.r = 0.5f;
+            light1_marker.color.g = 0.5f;
+            light1_marker.color.b = 0.5f;
+        break;}
+    }
+    
     light_marker.lifetime = ros::Duration();
     light1_marker.lifetime = ros::Duration();
     box_marker.lifetime = ros::Duration();
