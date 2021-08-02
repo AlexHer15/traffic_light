@@ -24,6 +24,7 @@ void change_placement(const geometry_msgs::Pose& msg)
 int main( int argc, char** argv )
 {
     bool substate=true;
+
     location.position.x = 0;
     location.position.y = 0;
     location.position.z = 0;
@@ -44,6 +45,9 @@ int main( int argc, char** argv )
     ros::Rate rate(10);
 
     visualization_msgs::Marker box_marker,light_marker,light1_marker;
+
+    static tf::TransformBroadcaster br;
+    tf::Transform transform;
 
     light1_marker.header.frame_id = n.getNamespace();
     
@@ -218,9 +222,6 @@ int main( int argc, char** argv )
     marker_pub.publish(light1_marker);
     marker_pub.publish(box_marker);
     marker_pub.publish(light_marker);
-
-    static tf::TransformBroadcaster br;
-    tf::Transform transform;
     
     transform.setOrigin( tf::Vector3(location.position.x,location.position.y,location.position.z) );
     transform.setRotation(tf::Quaternion(location.orientation.x,location.orientation.y,location.orientation.z,location.orientation.w));

@@ -13,9 +13,9 @@ def talker():
     while not rospy.is_shutdown():
         
         msg=raw_input(rospy.get_namespace()+"enter state ")
-        
+        if (msg=="q"):
+            rospy.signal_shutdown(rospy.get_namespace()+" Stoped")
         pub.publish(msg)
-        
         rate.sleep()
 
 if __name__ == '__main__':
