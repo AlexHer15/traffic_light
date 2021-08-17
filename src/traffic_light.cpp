@@ -136,98 +136,98 @@ int main( int argc, char** argv )
     while(ros::ok) 
     {
 
-    box_marker.header.stamp = ros::Time::now();
-    light_marker.header.stamp = ros::Time::now();
-    light1_marker.header.stamp = ros::Time::now();
+        box_marker.header.stamp = ros::Time::now();
+        light_marker.header.stamp = ros::Time::now();
+        light1_marker.header.stamp = ros::Time::now();
+        
+        switch (state){
+            {case 1:
+                light_marker.color.r = 1.0f;
+                light_marker.color.g = 0.0f;
+                light_marker.color.b = 0.0f;
+                light_marker.pose.position.z = 0.2;
     
-    switch (state){
-        {case 1:
-            light_marker.color.r = 1.0f;
-            light_marker.color.g = 0.0f;
-            light_marker.color.b = 0.0f;
-            light_marker.pose.position.z = 0.2;
-
-
-            light1_marker.color.r = 0.5f;
-            light1_marker.color.g = 0.5f;
-            light1_marker.color.b = 0.5f;
-        break;}
-        {case 2:
-            light_marker.color.r = 1.0f;
-            light_marker.color.g = 0.0f;
-            light_marker.color.b = 0.0f;
-            light_marker.pose.position.z = 0.2;
-
-            light1_marker.color.a = 1.0f;
-            light1_marker.color.r = 1.0f;
-            light1_marker.color.g = 1.0f;
-            light1_marker.color.b = 0.0f;
-
-        break;}
-        {case 3:
-            light_marker.color.r = 0.0f;
-            light_marker.color.g = 1.0f;
-            light_marker.color.b = 0.0f;
-            light_marker.pose.position.z = 0.0;
-
-
-            light1_marker.color.r = 0.5f;
-            light1_marker.color.g = 0.5f;
-            light1_marker.color.b = 0.5f;
-        break;}
-        {case 4:
-            light_marker.color.r = 0.5f;
-            light_marker.color.g = 0.5f;
-            light_marker.color.b = 0.5f;
-
-            light1_marker.color.r = 1.0f;
-            light1_marker.color.g = 1.0f;
-            light1_marker.color.b = 0.0f;
-        break;}
-        {case 5:
-            light_marker.color.r = 0.5f;
-            light_marker.color.g = 0.5f;
-            light_marker.color.b = 0.5f;
-
-            if (substate == true)
-            {     
-            substate = false;
-            light1_marker.color.r = 1.0f;
-            light1_marker.color.g = 1.0f;
-            light1_marker.color.b = 0.0f;
-            }
-            else
-            {
-            light1_marker.color.r = 0.5f;
-            light1_marker.color.g = 0.5f;
-            light1_marker.color.b = 0.5f;
-            substate = true;
-            }
+    
+                light1_marker.color.r = 0.5f;
+                light1_marker.color.g = 0.5f;
+                light1_marker.color.b = 0.5f;
             break;}
-        {case 6:
-            light_marker.color.r = 0.5f;
-            light_marker.color.g = 0.5f;
-            light_marker.color.b = 0.5f;
-
-            light1_marker.color.r = 0.5f;
-            light1_marker.color.g = 0.5f;
-            light1_marker.color.b = 0.5f;
-        break;}
-    }
+            {case 2:
+                light_marker.color.r = 1.0f;
+                light_marker.color.g = 0.0f;
+                light_marker.color.b = 0.0f;
+                light_marker.pose.position.z = 0.2;
     
-    light_marker.lifetime = ros::Duration();
-    light1_marker.lifetime = ros::Duration();
-    box_marker.lifetime = ros::Duration();
-
-    marker_pub.publish(light1_marker);
-    marker_pub.publish(box_marker);
-    marker_pub.publish(light_marker);
+                light1_marker.color.a = 1.0f;
+                light1_marker.color.r = 1.0f;
+                light1_marker.color.g = 1.0f;
+                light1_marker.color.b = 0.0f;
     
-    transform.setOrigin( tf::Vector3(location.position.x,location.position.y,location.position.z) );
-    transform.setRotation(tf::Quaternion(location.orientation.x,location.orientation.y,location.orientation.z,location.orientation.w));
-    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", n.getNamespace()));
+            break;}
+            {case 3:
+                light_marker.color.r = 0.0f;
+                light_marker.color.g = 1.0f;
+                light_marker.color.b = 0.0f;
+                light_marker.pose.position.z = 0.0;
     
-    ros::spinOnce();
-    rate.sleep();
+    
+                light1_marker.color.r = 0.5f;
+                light1_marker.color.g = 0.5f;
+                light1_marker.color.b = 0.5f;
+            break;}
+            {case 4:
+                light_marker.color.r = 0.5f;
+                light_marker.color.g = 0.5f;
+                light_marker.color.b = 0.5f;
+    
+                light1_marker.color.r = 1.0f;
+                light1_marker.color.g = 1.0f;
+                light1_marker.color.b = 0.0f;
+            break;}
+            {case 5:
+                light_marker.color.r = 0.5f;
+                light_marker.color.g = 0.5f;
+                light_marker.color.b = 0.5f;
+    
+                if (substate == true)
+                {     
+                substate = false;
+                light1_marker.color.r = 1.0f;
+                light1_marker.color.g = 1.0f;
+                light1_marker.color.b = 0.0f;
+                }
+                else
+                {
+                light1_marker.color.r = 0.5f;
+                light1_marker.color.g = 0.5f;
+                light1_marker.color.b = 0.5f;
+                substate = true;
+                }
+                break;}
+            {case 6:
+                light_marker.color.r = 0.5f;
+                light_marker.color.g = 0.5f;
+                light_marker.color.b = 0.5f;
+    
+                light1_marker.color.r = 0.5f;
+                light1_marker.color.g = 0.5f;
+                light1_marker.color.b = 0.5f;
+            break;}
+        }
+        
+        light_marker.lifetime = ros::Duration();
+        light1_marker.lifetime = ros::Duration();
+        box_marker.lifetime = ros::Duration();
+    
+        marker_pub.publish(light1_marker);
+        marker_pub.publish(box_marker);
+        marker_pub.publish(light_marker);
+        
+        transform.setOrigin( tf::Vector3(location.position.x,location.position.y,location.position.z) );
+        transform.setRotation(tf::Quaternion(location.orientation.x,location.orientation.y,location.orientation.z,location.orientation.w));
+        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", n.getNamespace()));
+        
+        ros::spinOnce();
+        rate.sleep();
     }
 }
