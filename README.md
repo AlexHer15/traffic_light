@@ -28,7 +28,7 @@ To change the state of the traffic light you can use run:
     
     rosrun traffic_light change_state.py
 
-And for multiple traffic lights u can change and use the change_state and pub_state launch files witch ask for a number between 1-6.
+And for multiple traffic lights u can change and use the change_state and pub_state launch files witch ask for a number between 1 and 6.
 
 To change the position and orientation of the traffic light you can use run: 
     
@@ -37,6 +37,8 @@ To change the position and orientation of the traffic light you can use run:
 And for multiple traffic lights u can change and use the place_light and pub_location launch files witch ask for it's new position in xyz and it's quadric orientation. 
 
 ## **Traffic light's states**
+
+Based on the number send by change_state the traffic light has the following states:
 
 ![Marker](traffic_light_state.png)
 
